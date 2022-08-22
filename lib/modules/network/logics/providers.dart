@@ -3,12 +3,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart'
     show FutureProvider, Provider;
 import 'package:network_demo/_features.dart';
 
+final tokenRef = Provider<String>(
+  (_) => const String.fromEnvironment('TOKEN'),
+  name: 'tokenRef',
+);
+
 final dioRef = Provider<Dio>(
-  (_) {
+  (ref) {
+    final token = ref.watch(tokenRef);
     final options = BaseOptions(
       baseUrl: 'https://gorest.co.in/public/v2',
       connectTimeout: 5000,
       receiveTimeout: 3000,
+      headers: <String, dynamic>{'Authorization': 'Bearer $token'},
     );
     return Dio(options);
   },

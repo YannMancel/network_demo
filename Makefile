@@ -2,6 +2,7 @@ FLUTTER_VERSION?=3.0.5
 FLUTTER?=fvm flutter
 REPOSITORIES?=lib/
 RUN_VERSION?=--debug
+TOKEN?=""
 
 GREEN_COLOR=\033[32m
 NO_COLOR=\033[0m
@@ -55,7 +56,9 @@ format-analyze: format analyze ## Format & Analyze Dart code of the project
 .PHONY: run
 run: ## Run application by default debug version
 	@$(call print_color_message,"Run application by default debug version")
-	$(FLUTTER) run $(RUN_VERSION)
+	$(FLUTTER) run \
+		$(RUN_VERSION) \
+		--dart-define TOKEN=$(TOKEN)
 
 .PHONY: devtools
 devtools: ## Serving DevTools
@@ -71,11 +74,6 @@ show-dependencies: ## Show dependencies tree
 outdated: ## Check the version of packages
 	@$(call print_color_message,"Check the version of packages")
 	$(FLUTTER) pub outdated --color
-
-.PHONY: build-desktop
-build-desktop: ## Build application on desktop by default on macos
-	@$(call print_color_message,"Build application on desktop by default on macos")
-	$(FLUTTER) build $(RUN_DESKTOP) $(RUN_VERSION)
 
 ##
 ## ---------------------------------------------------------------
