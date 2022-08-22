@@ -1,0 +1,10 @@
+# https://www.wilsonwilson.dev/articles/flutter-build-yaml/
+
+targets:
+  $default:
+    builders:
+      freezed|freezed:
+        enabled: true
+        generate_for:
+          - "lib/core/models/result.dart"
+          - "lib/core/models/user.dart"
