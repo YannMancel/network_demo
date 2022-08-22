@@ -16,9 +16,11 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$User {
-  int get id => throw _privateConstructorUsedError;
+  int? get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
+  String get gender => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $UserCopyWith<User> get copyWith => throw _privateConstructorUsedError;
@@ -28,7 +30,7 @@ mixin _$User {
 abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res>;
-  $Res call({int id, String name, String email});
+  $Res call({int? id, String name, String email, String gender, String status});
 }
 
 /// @nodoc
@@ -44,12 +46,14 @@ class _$UserCopyWithImpl<$Res> implements $UserCopyWith<$Res> {
     Object? id = freezed,
     Object? name = freezed,
     Object? email = freezed,
+    Object? gender = freezed,
+    Object? status = freezed,
   }) {
     return _then(_value.copyWith(
       id: id == freezed
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       name: name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -57,6 +61,14 @@ class _$UserCopyWithImpl<$Res> implements $UserCopyWith<$Res> {
       email: email == freezed
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      gender: gender == freezed
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: status == freezed
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -67,7 +79,7 @@ abstract class _$$_UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$$_UserCopyWith(_$_User value, $Res Function(_$_User) then) =
       __$$_UserCopyWithImpl<$Res>;
   @override
-  $Res call({int id, String name, String email});
+  $Res call({int? id, String name, String email, String gender, String status});
 }
 
 /// @nodoc
@@ -84,12 +96,14 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res>
     Object? id = freezed,
     Object? name = freezed,
     Object? email = freezed,
+    Object? gender = freezed,
+    Object? status = freezed,
   }) {
     return _then(_$_User(
       id: id == freezed
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       name: name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -98,6 +112,14 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res>
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
+      gender: gender == freezed
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: status == freezed
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -105,19 +127,28 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_User extends _User {
-  const _$_User({required this.id, required this.name, required this.email})
+  const _$_User(
+      {this.id,
+      required this.name,
+      required this.email,
+      required this.gender,
+      required this.status})
       : super._();
 
   @override
-  final int id;
+  final int? id;
   @override
   final String name;
   @override
   final String email;
+  @override
+  final String gender;
+  @override
+  final String status;
 
   @override
   String toString() {
-    return 'User(id: $id, name: $name, email: $email)';
+    return 'User(id: $id, name: $name, email: $email, gender: $gender, status: $status)';
   }
 
   @override
@@ -127,7 +158,9 @@ class _$_User extends _User {
             other is _$_User &&
             const DeepCollectionEquality().equals(other.id, id) &&
             const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.email, email));
+            const DeepCollectionEquality().equals(other.email, email) &&
+            const DeepCollectionEquality().equals(other.gender, gender) &&
+            const DeepCollectionEquality().equals(other.status, status));
   }
 
   @override
@@ -135,7 +168,9 @@ class _$_User extends _User {
       runtimeType,
       const DeepCollectionEquality().hash(id),
       const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(email));
+      const DeepCollectionEquality().hash(email),
+      const DeepCollectionEquality().hash(gender),
+      const DeepCollectionEquality().hash(status));
 
   @JsonKey(ignore: true)
   @override
@@ -145,17 +180,23 @@ class _$_User extends _User {
 
 abstract class _User extends User {
   const factory _User(
-      {required final int id,
+      {final int? id,
       required final String name,
-      required final String email}) = _$_User;
+      required final String email,
+      required final String gender,
+      required final String status}) = _$_User;
   const _User._() : super._();
 
   @override
-  int get id;
+  int? get id;
   @override
   String get name;
   @override
   String get email;
+  @override
+  String get gender;
+  @override
+  String get status;
   @override
   @JsonKey(ignore: true)
   _$$_UserCopyWith<_$_User> get copyWith => throw _privateConstructorUsedError;

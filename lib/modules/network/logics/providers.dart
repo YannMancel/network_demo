@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart' show BaseOptions, Dio;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show FutureProvider, Provider;
+    show Provider, StateNotifier, StateNotifierProvider;
 import 'package:network_demo/_features.dart';
 
 final tokenRef = Provider<String>(
@@ -30,26 +30,13 @@ final networkRepositoryRef = Provider<NetworkRepositoryInterface>(
   name: 'networkRepositoryRef',
 );
 
-final usersRef = FutureProvider<Result<List<User>>>(
-  (ref) async {
-    final networkRepository = ref.watch(networkRepositoryRef);
+final userLogicRef = Provider<UserLogicInterface>(
+  (ref) => UserLogic(reader: ref.read),
+  name: 'userLogicRef',
+);
 
-    final response = await networkRepository.get<dynamic>('/users');
-    return response.when<Result<List<User>>>(
-      data: (value) {
-        try {
-          final users = (value as List<dynamic>)
-              .cast<Map<String, dynamic>>()
-              .map(User.fromJson)
-              .toList(growable: false);
-
-          return Result<List<User>>.data(value: users);
-        } catch (e) {
-          return Result<List<User>>.error(exception: Exception(e.toString()));
-        }
-      },
-      error: (e) => Result<List<User>>.error(exception: e),
-    );
-  },
+final usersRef = StateNotifierProvider<StateNotifier<Result<List<User>>>,
+    Result<List<User>>>(
+  (ref) => ref.watch(userLogicRef).stateNotifier,
   name: 'usersRef',
 );

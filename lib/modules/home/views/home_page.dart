@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show AsyncValueX, ConsumerWidget, WidgetRef;
+    show ConsumerWidget, WidgetRef;
 import 'package:network_demo/_features.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key, required this.title});
 
   final String title;
+
+  Future<void> _onPressed(BuildContext context, WidgetRef ref) async {
+    final result = await ref.read(userLogicRef).addUser(
+          const User(
+            name: 'BILI',
+            email: 'fake@yopmail.fr',
+            gender: 'male',
+            status: 'inactive',
+          ),
+        );
+
+    if (result.isError) {
+      context.notify = 'Oupss, an error has occurred';
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,6 +32,10 @@ class HomePage extends ConsumerWidget {
         title: Text(title),
       ),
       body: asyncUsers.when<Widget>(
+        data: (users) => _HomeView(users: users!),
+        error: (e) => ErrorWidget(e),
+      ),
+/*      body: asyncUsers.when<Widget>(
         data: (result) => result.when<Widget>(
           data: (users) => _HomeView(users: users!),
           error: (e) => ErrorWidget(e),
@@ -25,6 +44,10 @@ class HomePage extends ConsumerWidget {
           child: CircularProgressIndicator.adaptive(),
         ),
         error: (e, _) => ErrorWidget(e),
+      ),*/
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _onPressed(context, ref),
+        child: const Icon(Icons.add),
       ),
     );
   }
