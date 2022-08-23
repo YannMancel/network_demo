@@ -15,25 +15,21 @@ class UserLogic extends StateNotifier<Result<List<User>>>
 
   final Reader reader;
 
-  NetworkRepositoryInterface get _network {
-    return reader(networkRepositoryRef);
-  }
+  String get _userPath => '/users';
+
+  NetworkRepositoryInterface get _network => reader(networkRepositoryRef);
 
   Future<void> _populate() async {
-    final response = await _network.get<dynamic>('/users');
+    final response = await _network.get<dynamic>(_userPath);
     state = response.when<Result<List<User>>>(
-      data: (value) {
-        try {
-          final users = (value as List<dynamic>)
+      data: (value) => Result.runGuarded<List<User>>(
+        run: () {
+          return (value as List<dynamic>)
               .cast<Map<String, dynamic>>()
               .map(User.fromJson)
               .toList(growable: false);
-
-          return Result<List<User>>.data(value: users);
-        } catch (e) {
-          return Result<List<User>>.error(exception: Exception(e.toString()));
-        }
-      },
+        },
+      ),
       error: (e) => Result<List<User>>.error(exception: e),
     );
   }
@@ -44,27 +40,25 @@ class UserLogic extends StateNotifier<Result<List<User>>>
   @override
   Future<Result<User>> addUser(User user) async {
     final response = await _network.post(
-      '/users',
+      _userPath,
       data: User.toJson(user),
     );
 
     return response.when<Result<User>>(
-      data: (value) {
-        try {
+      data: (value) => Result.runGuarded<User>(
+        run: () {
           final newUser = User.fromJson(value as Map<String, dynamic>);
 
           state = Result<List<User>>.data(
-            value: state.when(
-              data: (users) => <User>[if (users != null) ...users, newUser],
+            value: state.when<List<User>>(
+              data: (users) => <User>[newUser, if (users != null) ...users],
               error: (_) => <User>[newUser],
             ),
           );
 
-          return Result<User>.data(value: newUser);
-        } catch (e) {
-          return Result<User>.error(exception: Exception(e.toString()));
-        }
-      },
+          return newUser;
+        },
+      ),
       error: (e) => Result<User>.error(exception: e),
     );
   }
