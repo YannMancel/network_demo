@@ -25,6 +25,7 @@ class LoggerInterceptor extends Interceptor {
       'headers': options.headers,
       'baseUrl': options.baseUrl,
       'path': options.path,
+      'data': options.data,
     });
     Logger.info(message: message);
 
@@ -50,6 +51,7 @@ class LoggerInterceptor extends Interceptor {
     final message = _buildMessage(map: <String, dynamic>{
       'type': 'ERROR ${err.type}',
       'message': err.message,
+      'response': err.response?.data,
       'method': 'REQUEST ${err.requestOptions.method}',
       'headers': err.requestOptions.headers,
       'baseUrl': err.requestOptions.baseUrl,
