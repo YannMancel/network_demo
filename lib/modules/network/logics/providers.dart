@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart' show BaseOptions, Dio;
+import 'package:dio/dio.dart' show BaseOptions, Dio, Interceptor;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
     show Provider, StreamProvider;
 import 'package:network_demo/_features.dart';
@@ -15,9 +15,13 @@ final dioRef = Provider<Dio>(
       baseUrl: 'https://gorest.co.in/public/v2',
       connectTimeout: 5000,
       receiveTimeout: 3000,
-      headers: <String, dynamic>{'Authorization': 'Bearer $token'},
     );
-    return Dio(options);
+    final interceptors = <Interceptor>[
+      AuthorizationInterceptor(token),
+      LoggerInterceptor(),
+    ];
+
+    return Dio(options)..interceptors.addAll(interceptors);
   },
   name: 'dioRef',
 );
