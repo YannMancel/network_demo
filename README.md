@@ -1,5 +1,4 @@
 [![badge_flutter]][link_flutter_release]
-[![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
 
 # network_demo
 **Goal**: A Flutter project to manage network requests.
@@ -13,6 +12,15 @@
 2. In Android Studio, select *File* | *Open...*
 3. Select the project
 
+## Database
+We will be utilizing [Go REST][link_go_rest] as the online REST API for testing our app.
+it provides fully secured rapid prototyping and lets us do a variety of network operations on the data.
+
+## Run
+```bash
+make run TOKEN=YOUR_ACCESS_TOKEN
+```
+
 ## Dependencies
 * Flutter Version Management
   * [fvm][dependencies_fvm]
@@ -24,7 +32,7 @@
   * [flutter_hooks][dependencies_flutter_hooks]
   * [hooks_riverpod][dependencies_hooks_riverpod]
 * Network
-  * [dependencies_dio]
+  * [dio][dependencies_dio]
 
 ## Troubleshooting
 
@@ -40,6 +48,7 @@
 
 [badge_flutter]: https://img.shields.io/badge/flutter-v3.0.5-blue?logo=flutter
 [link_flutter_release]: https://docs.flutter.dev/development/tools/sdk/releases
+[link_go_rest]: https://gorest.co.in/
 [dependencies_fvm]: https://fvm.app/
 [dependencies_build_runner]: https://pub.dev/packages/build_runner
 [dependencies_freezed]: https://pub.dev/packages/freezed
