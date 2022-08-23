@@ -17,8 +17,12 @@ class UserLogic implements UserLogicInterface {
 
   final Reader reader;
   late final StreamController<Result<List<User>>> _streamController;
+  late Result<List<User>> _currentResult;
 
-  set data(Result<List<User>> result) => _streamController.sink.add(result);
+  set data(Result<List<User>> result) {
+    _currentResult = result;
+    _streamController.sink.add(result);
+  }
 
   String get _userPath => '/users';
 
@@ -49,15 +53,13 @@ class UserLogic implements UserLogicInterface {
       data: User.toJson(user),
     );
 
-    final lastData = await _streamController.stream.last;
-
     return response.when<Result<User>>(
       data: (value) => Result.runGuarded<User>(
         run: () {
           final newUser = User.fromJson(value as Map<String, dynamic>);
 
           data = Result<List<User>>.data(
-            value: lastData.when<List<User>>(
+            value: _currentResult.when<List<User>>(
               data: (users) => <User>[newUser, if (users != null) ...users],
               error: (_) => <User>[newUser],
             ),
