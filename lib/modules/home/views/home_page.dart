@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show ConsumerWidget, WidgetRef;
+    show AsyncValueX, ConsumerWidget, WidgetRef;
 import 'package:network_demo/_features.dart';
 
 class HomePage extends ConsumerWidget {
@@ -32,10 +32,6 @@ class HomePage extends ConsumerWidget {
         title: Text(title),
       ),
       body: asyncUsers.when<Widget>(
-        data: (users) => _HomeView(users: users!),
-        error: (e) => ErrorWidget(e),
-      ),
-/*      body: asyncUsers.when<Widget>(
         data: (result) => result.when<Widget>(
           data: (users) => _HomeView(users: users!),
           error: (e) => ErrorWidget(e),
@@ -44,7 +40,7 @@ class HomePage extends ConsumerWidget {
           child: CircularProgressIndicator.adaptive(),
         ),
         error: (e, _) => ErrorWidget(e),
-      ),*/
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _onPressed(context, ref),
         child: const Icon(Icons.add),

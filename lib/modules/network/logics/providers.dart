@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart' show BaseOptions, Dio;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show Provider, StateNotifier, StateNotifierProvider;
+    show Provider, StreamProvider;
 import 'package:network_demo/_features.dart';
 
 final tokenRef = Provider<String>(
@@ -30,13 +30,16 @@ final networkRepositoryRef = Provider<NetworkRepositoryInterface>(
   name: 'networkRepositoryRef',
 );
 
-final userLogicRef = Provider<UserLogicInterface>(
-  (ref) => UserLogic(reader: ref.read),
+final userLogicRef = Provider.autoDispose<UserLogicInterface>(
+  (ref) {
+    final logic = UserLogic(reader: ref.read);
+    ref.onDispose(logic.onDispose);
+    return logic;
+  },
   name: 'userLogicRef',
 );
 
-final usersRef = StateNotifierProvider<StateNotifier<Result<List<User>>>,
-    Result<List<User>>>(
-  (ref) => ref.watch(userLogicRef).stateNotifier,
+final usersRef = StreamProvider.autoDispose<Result<List<User>>>(
+  (ref) => ref.watch(userLogicRef).stream,
   name: 'usersRef',
 );

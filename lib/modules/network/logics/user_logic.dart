@@ -1,19 +1,24 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart' show Reader, StateNotifier;
+import 'dart:async';
+
+import 'package:hooks_riverpod/hooks_riverpod.dart' show Reader;
 import 'package:network_demo/_features.dart';
 
 abstract class UserLogicInterface {
-  StateNotifier<Result<List<User>>> get stateNotifier;
+  Stream<Result<List<User>>> get stream;
   Future<Result<User>> addUser(User user);
+  void onDispose();
 }
 
-class UserLogic extends StateNotifier<Result<List<User>>>
-    implements UserLogicInterface {
-  UserLogic({required this.reader})
-      : super(Result<List<User>>.data(value: List<User>.empty())) {
+class UserLogic implements UserLogicInterface {
+  UserLogic({required this.reader}) {
+    _streamController = StreamController();
     _populate();
   }
 
   final Reader reader;
+  late final StreamController<Result<List<User>>> _streamController;
+
+  set data(Result<List<User>> result) => _streamController.sink.add(result);
 
   String get _userPath => '/users';
 
@@ -21,7 +26,7 @@ class UserLogic extends StateNotifier<Result<List<User>>>
 
   Future<void> _populate() async {
     final response = await _network.get<dynamic>(_userPath);
-    state = response.when<Result<List<User>>>(
+    data = response.when<Result<List<User>>>(
       data: (value) => Result.runGuarded<List<User>>(
         run: () {
           return (value as List<dynamic>)
@@ -35,7 +40,7 @@ class UserLogic extends StateNotifier<Result<List<User>>>
   }
 
   @override
-  StateNotifier<Result<List<User>>> get stateNotifier => this;
+  Stream<Result<List<User>>> get stream => _streamController.stream.distinct();
 
   @override
   Future<Result<User>> addUser(User user) async {
@@ -44,13 +49,15 @@ class UserLogic extends StateNotifier<Result<List<User>>>
       data: User.toJson(user),
     );
 
+    final lastData = await _streamController.stream.last;
+
     return response.when<Result<User>>(
       data: (value) => Result.runGuarded<User>(
         run: () {
           final newUser = User.fromJson(value as Map<String, dynamic>);
 
-          state = Result<List<User>>.data(
-            value: state.when<List<User>>(
+          data = Result<List<User>>.data(
+            value: lastData.when<List<User>>(
               data: (users) => <User>[newUser, if (users != null) ...users],
               error: (_) => <User>[newUser],
             ),
@@ -61,5 +68,10 @@ class UserLogic extends StateNotifier<Result<List<User>>>
       ),
       error: (e) => Result<User>.error(exception: e),
     );
+  }
+
+  @override
+  void onDispose() {
+    Future.sync(() async => _streamController.close());
   }
 }
