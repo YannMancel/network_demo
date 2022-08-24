@@ -9,18 +9,12 @@ class HomePage extends ConsumerWidget {
   final String title;
 
   Future<void> _onPressed(BuildContext context, WidgetRef ref) async {
-    final result = await ref.read(userLogicRef).addUser(
-          const User(
-            name: 'BILI',
-            email: 'fake@yopmail.fr',
-            gender: 'male',
-            status: 'inactive',
-          ),
-        );
+    final result = await ref.read(userLogicRef).addUser();
 
-    if (result.isError) {
-      context.notify = 'Oupss, an error has occurred';
-    }
+    context.notify = result.when<String>(
+      data: (user) => '${user!.name} has been added.',
+      error: (e) => 'An error has occurred',
+    );
   }
 
   @override

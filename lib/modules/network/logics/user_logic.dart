@@ -5,7 +5,7 @@ import 'package:network_demo/_features.dart';
 
 abstract class UserLogicInterface {
   Stream<Result<List<User>>> get stream;
-  Future<Result<User>> addUser(User user);
+  Future<Result<User>> addUser();
   void onDispose();
 }
 
@@ -43,29 +43,38 @@ class UserLogic implements UserLogicInterface {
     );
   }
 
+  User get _userGenerator {
+    return const User(
+      name: 'BILI',
+      email: 'fake@yopmail.fr',
+      gender: 'male',
+      status: 'inactive',
+    );
+  }
+
   @override
   Stream<Result<List<User>>> get stream => _streamController.stream.distinct();
 
   @override
-  Future<Result<User>> addUser(User user) async {
+  Future<Result<User>> addUser() async {
     final response = await _network.post(
       _userPath,
-      data: User.toJson(user),
+      data: User.toJson(_userGenerator),
     );
 
     return response.when<Result<User>>(
       data: (value) => Result.runGuarded<User>(
         run: () {
-          final newUser = User.fromJson(value as Map<String, dynamic>);
+          final user = User.fromJson(value as Map<String, dynamic>);
 
           data = Result<List<User>>.data(
             value: _currentResult.when<List<User>>(
-              data: (users) => <User>[newUser, if (users != null) ...users],
-              error: (_) => <User>[newUser],
+              data: (users) => <User>[user, if (users != null) ...users],
+              error: (_) => <User>[user],
             ),
           );
 
-          return newUser;
+          return user;
         },
       ),
       error: (e) => Result<User>.error(exception: e),
