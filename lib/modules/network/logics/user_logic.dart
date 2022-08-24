@@ -24,23 +24,10 @@ class UserLogic implements UserLogicInterface {
     _streamController.sink.add(result);
   }
 
-  String get _userPath => '/users';
-
-  NetworkRepositoryInterface get _network => reader(networkRepositoryRef);
+  UserRepositoryInterface get _repository => reader(userRepositoryRef);
 
   Future<void> _populate() async {
-    final response = await _network.get<dynamic>(_userPath);
-    data = response.when<Result<List<User>>>(
-      data: (value) => Result.runGuarded<List<User>>(
-        run: () {
-          return (value as List<dynamic>)
-              .cast<Map<String, dynamic>>()
-              .map(User.fromJson)
-              .toList(growable: false);
-        },
-      ),
-      error: (e) => Result<List<User>>.error(exception: e),
-    );
+    data = await _repository.getUsers();
   }
 
   User get _userGenerator {
@@ -57,28 +44,22 @@ class UserLogic implements UserLogicInterface {
 
   @override
   Future<Result<User>> addUser() async {
-    final response = await _network.post(
-      _userPath,
-      data: User.toJson(_userGenerator),
+    final result = await _repository.createUser(_userGenerator);
+
+    result.whenOrNull<void>(
+      data: (user) {
+        assert(user != null, 'user must be not null.');
+
+        data = Result<List<User>>.data(
+          value: _currentResult.when<List<User>>(
+            data: (users) => <User>[user!, if (users != null) ...users],
+            error: (_) => <User>[user!],
+          ),
+        );
+      },
     );
 
-    return response.when<Result<User>>(
-      data: (value) => Result.runGuarded<User>(
-        run: () {
-          final user = User.fromJson(value as Map<String, dynamic>);
-
-          data = Result<List<User>>.data(
-            value: _currentResult.when<List<User>>(
-              data: (users) => <User>[user, if (users != null) ...users],
-              error: (_) => <User>[user],
-            ),
-          );
-
-          return user;
-        },
-      ),
-      error: (e) => Result<User>.error(exception: e),
-    );
+    return result;
   }
 
   @override

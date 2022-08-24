@@ -34,6 +34,14 @@ final networkRepositoryRef = Provider<NetworkRepositoryInterface>(
   name: 'networkRepositoryRef',
 );
 
+final userRepositoryRef = Provider<UserRepositoryInterface>(
+  (ref) {
+    final networkRepository = ref.watch(networkRepositoryRef);
+    return UserRepository(networkRepository);
+  },
+  name: 'userRepositoryRef',
+);
+
 final userLogicRef = Provider.autoDispose<UserLogicInterface>(
   (ref) {
     final logic = UserLogic(reader: ref.read);
